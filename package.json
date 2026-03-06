@@ -1,0 +1,22 @@
+{
+  "name": "mini-acorn",
+  "version": "1.0.0",
+  "description": "source code\r    ↓\r Tokenizer（词法分析）\r    ↓\r Parser（语法分析）\r    ↓\r AST",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/whl1022/mini-acorn.git"
+  },
+  "keywords": [
+    "mini-acorn"
+  ],
+  "author": "whl1022",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/whl1022/mini-acorn/issues"
+  },
+  "homepage": "https://github.com/whl1022/mini-acorn#readme"
+}
