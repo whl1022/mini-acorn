@@ -4,7 +4,9 @@
   "description": "source code\r    ↓\r Tokenizer（词法分析）\r    ↓\r Parser（语法分析）\r    ↓\r AST",
   "main": "main.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc",
+    "start": "node dist/main.js"
   },
   "repository": {
     "type": "git",
@@ -18,5 +20,8 @@
   "bugs": {
     "url": "https://github.com/whl1022/mini-acorn/issues"
   },
-  "homepage": "https://github.com/whl1022/mini-acorn#readme"
+  "homepage": "https://github.com/whl1022/mini-acorn#readme",
+  "devDependencies": {
+    "typescript": "^5.9.3"
+  }
 }
