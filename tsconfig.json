@@ -10,15 +10,13 @@
     "module": "ES6",
     "target": "ES6",
     "types": [],
-    "includes": ["src/**/*"],
-    "exclude": ["node_modules"],
     // For nodejs:
     // "lib": ["esnext"],
     // "types": ["node"],
     // and npm install -D @types/node
 
     // Other Outputs
-    "sourceMap": true,
+    "sourceMap": false,
     "declaration": true,
     "declarationMap": true,
 
@@ -44,5 +42,7 @@
     "noUncheckedSideEffectImports": true,
     "moduleDetection": "force",
     "skipLibCheck": true,
-  }
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules"]
 }
