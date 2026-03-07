@@ -1,4 +1,5 @@
 export type kwType = 'const' | 'var' | 'let'
+export const keywords = 'const var let'
 interface TokenTypeConf {
     keyword?: string
     beforeExpr?: boolean
@@ -16,7 +17,7 @@ export class TokenType  {
 
     constructor(label : string, conf : TokenTypeConf = {} ) {
         this.label = label
-        const { keyword = '', beforeExpr = false, startExpr = false, isAssign = false, isLoop = false} = conf
+        const { keyword = '', beforeExpr = false, startExpr = false, isAssign = false, isLoop = false } = conf
         this.keyword = keyword
         this.beforeExpr = !!beforeExpr
         this.startExpr = !!startExpr
