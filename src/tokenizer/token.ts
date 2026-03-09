@@ -1,15 +1,7 @@
-import { kwTokenMap, TokenType, tokenTypeMap, type kwType } from "./tokenTypes";
 import { Parser } from '../parser/parser'
+import { kwTokenMap, TokenType, tokenTypeMap, type kwType } from "./tokenTypes";
 import { isIdentifierChar, isIdentifierStart } from "../utils/identifier";
-class SourceLocation {
-    start: { line: number; column: number }
-    end: { line: number; column: number }
-  
-    constructor(p: any, startLoc: { line: number; column: number }, endLoc: { line: number; column: number }) {
-      this.start = startLoc
-      this.end = endLoc
-    }
-  }
+import { SourceLocation } from '../utils/loc';
 export class Token {
     type:  TokenType | null
     value: string | null
@@ -24,7 +16,7 @@ export class Token {
         this.start = p.start
         this.end = p.end
         if (p.options.locations && p.startLoc && p.endLoc) {
-            this.loc = new SourceLocation(this, p.startLoc, p.endLoc)
+            this.loc = new SourceLocation( p.startLoc, p.endLoc)
         }
     }
 }
@@ -42,6 +34,7 @@ declare module "../parser/parser" {
         finishOp( token: TokenType, size: number) : undefined
         readNumber( startsWithDot: boolean) : undefined
         readInt( radix : number, len ?: number) : number | null
+        skipSpace() : undefined
     }
 
 }
@@ -56,11 +49,39 @@ pp.next = function() {
     this.nextToken()
   }
 pp.nextToken = function() {
+    this.skipSpace()
     this.start = this.pos
     if( this.options.locations ) this.startLoc = this.curPosition()
     if( this.pos >= this.input.length) return this.finishToken( tokenTypeMap.eof)
     this.readToken(this.fullCharCodeAtPos())
     
+}
+pp.skipSpace = function() {
+  loop: while (this.pos < this.input.length) {
+    let ch = this.input.charCodeAt(this.pos)
+    switch (ch) {
+    case 32: case 160: // ' '
+      ++this.pos
+      break
+    case 13:
+      if (this.input.charCodeAt(this.pos + 1) === 10) {
+        ++this.pos
+      }
+    case 10: case 8232: case 8233:
+      ++this.pos
+      if (this.options.locations) {
+        ++this.curLine
+        this.lineStart = this.pos
+      }
+      break
+    default:
+      if (ch > 8 && ch < 14 || ch >= 5760 ) {
+        ++this.pos
+      } else {
+        break loop
+      }
+    }
+  }
 }
 pp.readToken = function( code ) {
     if( isIdentifierStart(code) || code === 92 /* '\' */){  

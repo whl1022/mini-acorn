@@ -1,4 +1,4 @@
-import { parse } from "../dist/src/main.js";
+import { parse } from "../dist/main.js";
 const  code = 'const a = 123';
 const tokens = []
 const resTree = parse( code,{

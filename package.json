@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "source code\r    ↓\r Tokenizer（词法分析）\r    ↓\r Parser（语法分析）\r    ↓\r AST",
   "main": "main.js",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
