@@ -2,7 +2,7 @@ import { Token } from '../tokenizer/token'
 export interface optionsProp {
     ecmaVersion : number
     locations : boolean
-    onToken ?: ( token : Token) => void | Array<Token> 
+    onToken ?: (( token : Token) => void) | (Array<Token>) 
 }
 export const defaultOptions : optionsProp = {
     ecmaVersion: 6, // 解析的ecmaScript版本

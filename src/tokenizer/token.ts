@@ -38,12 +38,16 @@ declare module "../parser/parser" {
         readWord() : undefined
         readWord1() : string
         getTokenFromCode( code : number) : undefined
+        readToken_eq_excl( code : number) : undefined
+        finishOp( token: TokenType, size: number) : undefined
+        readNumber( startsWithDot: boolean) : undefined
+        readInt( radix : number, len ?: number) : number | null
     }
 
 }
 const pp = Parser.prototype
 pp.next = function() {
-    if (this.options.onToken)
+    if (this.options.onToken && typeof this.options.onToken === 'function')
       this.options.onToken(new Token(this))
     this.lastTokEnd = this.end
     this.lastTokStart = this.start
@@ -105,6 +109,45 @@ pp.readWord1 = function() {
 /*
     处理运算符、特殊符号、数字
 */
-pp.getTokenFromCode = function () {
-
+pp.getTokenFromCode = function (code) {
+    switch(code) {
+        case 61: // '='
+        return this.readToken_eq_excl(code);
+        case 49: case 50: case 51: case 52: case 53: case 54: case 55: case 56: case 57: // 1-9
+        return this.readNumber(false)
+    }
+}
+/*
+    处理赋值运算符
+*/
+pp.readToken_eq_excl = function(code) {
+    if (code === 61) {
+        return this.finishOp(tokenTypeMap.eq,1) 
+    }
+}
+pp.finishOp = function(type, size) {
+    let str = this.input.slice(this.pos, this.pos + size)
+    this.pos += size
+    return this.finishToken(type, str)
+}
+pp.readNumber = function( startsWithDot ) {
+    let start = this.pos
+    let str = this.input.slice(start, this.pos)
+    let val = parseFloat(str)
+    return this.finishToken(tokenTypeMap.num, val)
+}
+pp.readInt = function(radix,len){
+    let start = this.pos, total = 0
+    for (let i = 0, e = len == null ? Infinity : len; i < e; ++i) {
+        let code = this.input.charCodeAt(this.pos), val
+        if (code >= 97) val = code - 97 + 10 // a
+        else if (code >= 65) val = code - 65 + 10 // A
+        else if (code >= 48 && code <= 57) val = code - 48 // 0-9
+        else val = Infinity
+        if (val >= radix) break
+        ++this.pos
+        total = total * radix + val
+    }
+    if (this.pos === start || len != null && this.pos - start !== len) return null
+    return total
 }
