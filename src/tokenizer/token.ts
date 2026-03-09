@@ -1,6 +1,6 @@
-import { TokenType, tokenTypeMap } from "./tokenTypes";
+import { kwTokenMap, TokenType, tokenTypeMap, type kwType } from "./tokenTypes";
 import { Parser } from '../parser/parser'
-import { isIdentifierStart } from "../utils/identifier";
+import { isIdentifierChar, isIdentifierStart } from "../utils/identifier";
 class SourceLocation {
     start: { line: number; column: number }
     end: { line: number; column: number }
@@ -32,9 +32,12 @@ declare module "../parser/parser" {
     interface Parser {
         next() : undefined
         nextToken() : undefined
-        readToken( code: number) : Token
+        readToken( code: number) : undefined
         finishToken( type: TokenType , val ?: any) : undefined
         fullCharCodeAtPos() : number
+        readWord() : undefined
+        readWord1() : string
+        getTokenFromCode( code : number) : undefined
     }
 
 }
@@ -56,7 +59,7 @@ pp.nextToken = function() {
     
 }
 pp.readToken = function( code ) {
-    if( isIdentifierStart(code) || code === 92 /* '\' */){
+    if( isIdentifierStart(code) || code === 92 /* '\' */){  
         return this.readWord() // 标识符
     }
     return this.getTokenFromCode(code) // 特殊字符 运算符 
@@ -73,4 +76,35 @@ pp.finishToken = function( type: TokenType, val ?: any) {
     if( this.options.locations) this.endLoc = this.curPosition()
     this.type = type
     this.value = val
+}
+pp.readWord = function() {
+    let word = this.readWord1()
+    let type = tokenTypeMap.name
+    if( this.keywords.test(word)) {
+        type = kwTokenMap[word as kwType]
+    }
+    return this.finishToken(type,word)
+}
+/* 
+    读取完整的标识符
+    相比较acorn6.0去掉了unicode转义字符的逻辑
+*/
+pp.readWord1 = function() {
+    let word = '',first = true, chunkStart = this.pos;
+    while(this.pos < this.input.length) {
+        let ch = this.fullCharCodeAtPos()
+        if( isIdentifierChar(ch)) {
+            this.pos += ch <= 0xffff ? 1 : 2
+        }else {
+            break;
+        }
+        first = false
+    }
+    return word + this.input.slice(chunkStart,this.pos)
+}
+/*
+    处理运算符、特殊符号、数字
+*/
+pp.getTokenFromCode = function () {
+
 }
